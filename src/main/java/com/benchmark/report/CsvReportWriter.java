@@ -38,18 +38,21 @@ public class CsvReportWriter {
     }
 
     /**
-     * Initialize: create file with header if it doesn't already exist.
+     * Initialize: delete the existing file if present, then create a fresh file with header.
      */
     public void initialize() {
         Path path = Paths.get(filePath);
-        if (!Files.exists(path)) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-                 CSVPrinter printer = new CSVPrinter(writer,
-                         CSVFormat.DEFAULT.builder().setHeader(HEADERS).build())) {
-                printer.flush();
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to initialize CSV file: " + e.getMessage(), e);
-            }
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to delete existing CSV file '" + filePath + "': " + e.getMessage(), e);
+        }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+             CSVPrinter printer = new CSVPrinter(writer,
+                     CSVFormat.DEFAULT.builder().setHeader(HEADERS).build())) {
+            printer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize CSV file: " + e.getMessage(), e);
         }
     }
 
