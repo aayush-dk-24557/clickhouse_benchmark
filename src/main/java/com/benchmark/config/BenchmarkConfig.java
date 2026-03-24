@@ -2,7 +2,7 @@ package com.benchmark.config;
 
 public class BenchmarkConfig {
     public static final String CLICKHOUSE_URL = "http://localhost:8123";
-    public static final String CLICKHOUSE_DATABASE = "default";
+    public static final String CLICKHOUSE_DATABASE = "AADDBB";
     public static final String CLICKHOUSE_USER = "default";
     public static final String CLICKHOUSE_PASSWORD = "";
 

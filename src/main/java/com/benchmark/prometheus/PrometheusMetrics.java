@@ -40,7 +40,7 @@ public class PrometheusMetrics {
     public double[] getCpuUsage(long startEpoch, long endEpoch) {
         try {
             String query = "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[1m])) * 100)";
-            List<Double> values = queryRangeSeries(query, startEpoch, endEpoch, "15s");
+            List<Double> values = queryRangeSeries(query, startEpoch, endEpoch, "500ms");
             if (values.isEmpty()) {
                 LOG.warning("No CPU data from Prometheus");
                 return new double[]{-1, -1, -1};
@@ -61,12 +61,12 @@ public class PrometheusMetrics {
         try {
             // Try primary query first
             String usedQuery = "node_memory_total_bytes - node_memory_available_bytes";
-            List<Double> usedValues = queryRangeSeries(usedQuery, startEpoch, endEpoch, "15s");
+            List<Double> usedValues = queryRangeSeries(usedQuery, startEpoch, endEpoch, "500ms");
 
             if (usedValues.isEmpty()) {
                 // macOS fallback
                 usedQuery = "node_memory_total_bytes - node_memory_free_bytes";
-                usedValues = queryRangeSeries(usedQuery, startEpoch, endEpoch, "15s");
+                usedValues = queryRangeSeries(usedQuery, startEpoch, endEpoch, "500ms");
             }
 
             if (usedValues.isEmpty()) {
@@ -76,7 +76,7 @@ public class PrometheusMetrics {
 
             // Get total memory for percentage calculation
             String totalQuery = "node_memory_total_bytes";
-            List<Double> totalValues = queryRangeSeries(totalQuery, startEpoch, endEpoch, "15s");
+            List<Double> totalValues = queryRangeSeries(totalQuery, startEpoch, endEpoch, "500ms");
 
             double[] usedStats = computeStats(usedValues);
             double[] result = new double[6];
