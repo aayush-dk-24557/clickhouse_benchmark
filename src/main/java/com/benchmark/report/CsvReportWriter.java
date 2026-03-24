@@ -70,29 +70,48 @@ public class CsvReportWriter {
                     result.totalRows,
                     result.batchSize,
                     result.totalBatches,
-                    result.totalInsertTimeSec,
-                    result.avgBatchTimeMs,
+                    fmtTime(result.totalInsertTimeSec),
+                    fmtTime(result.avgBatchTimeMs),
                     result.compressedBytes,
                     result.uncompressedBytes,
-                    result.compressionRatio,
-                    result.cpuMinPct,
-                    result.cpuMaxPct,
-                    result.cpuAvgPct,
-                    result.memMinBytes,
-                    result.memMaxBytes,
-                    result.memAvgBytes,
-                    result.memMinPct,
-                    result.memMaxPct,
-                    result.memAvgPct,
-                    result.diskUsedBeforeBytes,
-                    result.diskUsedAfterBytes,
-                    result.diskDeltaBytes,
-                    result.diskUsedPct
+                    fmtRatio(result.compressionRatio),
+                    fmtPct(result.cpuMinPct),
+                    fmtPct(result.cpuMaxPct),
+                    fmtPct(result.cpuAvgPct),
+                    fmtBytes(result.memMinBytes),
+                    fmtBytes(result.memMaxBytes),
+                    fmtBytes(result.memAvgBytes),
+                    fmtPct(result.memMinPct),
+                    fmtPct(result.memMaxPct),
+                    fmtPct(result.memAvgPct),
+                    fmtBytes(result.diskUsedBeforeBytes),
+                    fmtBytes(result.diskUsedAfterBytes),
+                    fmtBytes(result.diskDeltaBytes),
+                    fmtPct(result.diskUsedPct)
             );
             printer.flush();
         } catch (IOException e) {
             throw new RuntimeException("Failed to write CSV row: " + e.getMessage(), e);
         }
+    }
+
+    private static String fmtBytes(double v) {
+        return String.valueOf(Math.round(v));
+    }
+
+    private static String fmtPct(double v) {
+        if (v < 0) return String.valueOf((long) v);
+        return String.format("%.4f", v);
+    }
+
+    private static String fmtTime(double v) {
+        if (v < 0) return String.valueOf((long) v);
+        return String.format("%.6f", v);
+    }
+
+    private static String fmtRatio(double v) {
+        if (v < 0) return String.valueOf((long) v);
+        return String.format("%.4f", v);
     }
 
     /**

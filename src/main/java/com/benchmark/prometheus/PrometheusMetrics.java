@@ -80,9 +80,9 @@ public class PrometheusMetrics {
 
             double[] usedStats = computeStats(usedValues);
             double[] result = new double[6];
-            result[0] = usedStats[0]; // minBytes
-            result[1] = usedStats[1]; // maxBytes
-            result[2] = usedStats[2]; // avgBytes
+            result[0] = Math.round(usedStats[0]); // minBytes
+            result[1] = Math.round(usedStats[1]); // maxBytes
+            result[2] = Math.round(usedStats[2]); // avgBytes
 
             if (!totalValues.isEmpty()) {
                 double[] totalStats = computeStats(totalValues);
@@ -122,9 +122,10 @@ public class PrometheusMetrics {
             Double afterUsed = queryInstant(usedQuery, endEpoch);
             Double totalBytes = queryInstant(totalQuery, endEpoch);
 
-            double before = beforeUsed != null ? beforeUsed : -1;
-            double after = afterUsed != null ? afterUsed : -1;
-            double delta = (before >= 0 && after >= 0) ? after - before : -1;
+            double before = beforeUsed != null ? Math.round(beforeUsed) : -1;
+            double after = afterUsed != null ? Math.round(afterUsed) : -1;
+            double delta = (beforeUsed != null && afterUsed != null)
+                    ? Math.round(afterUsed - beforeUsed) : -1;
             double pct = (after >= 0 && totalBytes != null && totalBytes > 0)
                     ? (after / totalBytes) * 100.0 : -1;
 
