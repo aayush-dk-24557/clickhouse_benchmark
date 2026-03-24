@@ -32,6 +32,37 @@ public class ClickHouseManager {
     }
 
     /**
+     * Ensure the configured database exists, creating it if necessary.
+     * Uses a connection URL without the database parameter so the command
+     * succeeds even when the database does not yet exist.
+     */
+    public void ensureDatabaseExists() {
+        String url = BenchmarkConfig.CLICKHOUSE_URL + "/?user=" + BenchmarkConfig.CLICKHOUSE_USER
+                + "&password=" + BenchmarkConfig.CLICKHOUSE_PASSWORD;
+        String sql = "CREATE DATABASE IF NOT EXISTS " + BenchmarkConfig.CLICKHOUSE_DATABASE;
+        RequestBody body = RequestBody.create(sql, TEXT_PLAIN);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                String errorBody = response.body() != null ? response.body().string() : "(no body)";
+                throw new RuntimeException("ClickHouse error [" + response.code() + "]: " + errorBody);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("ClickHouse HTTP error: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Drop a table if it exists.
+     */
+    public void dropTableIfExists(String tableName) {
+        execute("DROP TABLE IF EXISTS " + tableName);
+    }
+
+    /**
      * Execute any SQL statement. Throws RuntimeException on failure.
      */
     public void execute(String sql) {
