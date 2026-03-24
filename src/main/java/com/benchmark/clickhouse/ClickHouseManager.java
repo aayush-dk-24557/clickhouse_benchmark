@@ -85,8 +85,8 @@ public class ClickHouseManager {
      * @return [compressedBytes, uncompressedBytes]
      */
     public long[] getColumnSizes(String tableName) {
-        String sql = "SELECT sum(column_data_compressed_bytes) AS compressed, " +
-                "sum(column_data_uncompressed_bytes) AS uncompressed " +
+        String sql = "SELECT sum(data_compressed_bytes) AS compressed, " +
+                "sum(data_uncompressed_bytes) AS uncompressed " +
                 "FROM system.columns " +
                 "WHERE database='" + BenchmarkConfig.CLICKHOUSE_DATABASE +
                 "' AND table='" + tableName + "' AND name='value'";
