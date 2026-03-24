@@ -31,6 +31,7 @@ public class Main {
 
         // 4. Initialize managers
         ClickHouseManager chManager = new ClickHouseManager();
+        chManager.ensureDatabaseExists();
         PrometheusMetrics prometheus = new PrometheusMetrics();
         DataGenerator generator = new DataGenerator();
 
@@ -49,7 +50,8 @@ public class Main {
             System.out.println("[" + current + "/" + total + "] Starting: " + combo.tableName);
 
             try {
-                // a. Create table
+                // a. Drop existing table and create a new one
+                chManager.dropTableIfExists(combo.tableName);
                 String ddl = TableSchemaBuilder.buildCreateTable(
                         combo.tableName, combo.fullTypeDef, combo.preprocessor, combo.codec);
                 chManager.createTable(ddl);
