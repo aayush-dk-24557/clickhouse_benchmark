@@ -15,4 +15,8 @@ public class BenchmarkConfig {
     public static final String OUTPUT_FILE = "benchmark_results.csv";
     public static final int LOG_INTERVAL = 100; // log every 100 batches
     public static final int MERGE_SETTLE_DELAY_MS = 3000;
+    // After DROP DATABASE (which removes all ~360 tables), ClickHouse deletes files
+    // asynchronously. Wait long enough for the OS to fully reclaim disk space so
+    // the first disk_before_mb reading is accurate.
+    public static final int DB_DROP_SETTLE_DELAY_MS = 30_000;
 }

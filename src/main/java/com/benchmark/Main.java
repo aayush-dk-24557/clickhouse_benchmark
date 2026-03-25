@@ -32,6 +32,10 @@ public class Main {
         // 4. Initialize managers
         ClickHouseManager chManager = new ClickHouseManager();
         chManager.recreateDatabase();
+        System.out.println("Waiting " + BenchmarkConfig.DB_DROP_SETTLE_DELAY_MS / 1000
+                + "s for ClickHouse to finish deleting all tables from disk...");
+        Thread.sleep(BenchmarkConfig.DB_DROP_SETTLE_DELAY_MS);
+        System.out.println("Disk settle wait complete. Starting benchmark.");
         PrometheusMetrics prometheus = new PrometheusMetrics();
         DataGenerator generator = new DataGenerator();
 
