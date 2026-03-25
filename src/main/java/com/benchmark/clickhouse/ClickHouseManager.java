@@ -32,6 +32,34 @@ public class ClickHouseManager {
     }
 
     /**
+     * Drop the configured database if it exists, then create it fresh.
+     * Uses a connection URL without the database parameter since we're
+     * operating on the database itself.
+     */
+    public void recreateDatabase() {
+        String url = BenchmarkConfig.CLICKHOUSE_URL + "/?user=" + BenchmarkConfig.CLICKHOUSE_USER
+                + "&password=" + BenchmarkConfig.CLICKHOUSE_PASSWORD;
+        executeOnUrl("DROP DATABASE IF EXISTS " + BenchmarkConfig.CLICKHOUSE_DATABASE, url);
+        executeOnUrl("CREATE DATABASE " + BenchmarkConfig.CLICKHOUSE_DATABASE, url);
+    }
+
+    private void executeOnUrl(String sql, String url) {
+        RequestBody body = RequestBody.create(sql, TEXT_PLAIN);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                String errorBody = response.body() != null ? response.body().string() : "(no body)";
+                throw new RuntimeException("ClickHouse error [" + response.code() + "]: " + errorBody);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("ClickHouse HTTP error: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Ensure the configured database exists, creating it if necessary.
      * Uses a connection URL without the database parameter so the command
      * succeeds even when the database does not yet exist.

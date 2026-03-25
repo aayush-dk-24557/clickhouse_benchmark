@@ -2,6 +2,7 @@ package com.benchmark.model;
 
 public class BenchmarkResult {
     public String dataType;
+    public String dataProperty;       // value range/characteristic label
     public String preprocessor;
     public String codec;
     public String tableName;
@@ -10,20 +11,20 @@ public class BenchmarkResult {
     public int totalBatches;
     public double totalInsertTimeSec;
     public double avgBatchTimeMs;
-    public long compressedBytes;
-    public long uncompressedBytes;
+    public double compressedMb;
+    public double uncompressedMb;
     public double compressionRatio;
     public double cpuMinPct;
     public double cpuMaxPct;
     public double cpuAvgPct;
-    public double memMinBytes;
-    public double memMaxBytes;
-    public double memAvgBytes;
+    public double memMinMb;
+    public double memMaxMb;
+    public double memAvgMb;
     public double memMinPct;
     public double memMaxPct;
     public double memAvgPct;
-    public double diskUsedBeforeBytes;
-    public double diskUsedAfterBytes;
-    public double diskDeltaBytes;
+    public double diskBeforeMb;
+    public double diskAfterMb;
+    public double diskDeltaMb;
     public double diskUsedPct;
 }

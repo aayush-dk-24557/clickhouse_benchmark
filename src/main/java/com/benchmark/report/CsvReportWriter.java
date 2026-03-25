@@ -20,15 +20,13 @@ import java.util.Set;
 public class CsvReportWriter {
 
     private static final String[] HEADERS = {
-            "data_type", "preprocessor", "codec", "table_name",
-            "total_rows", "batch_size", "total_batches",
+            "data_type", "data_property", "preprocessor", "codec",
+            "compression_ratio", "compressed_mb", "uncompressed_mb",
             "total_insert_time_sec", "avg_batch_time_ms",
-            "compressed_bytes", "uncompressed_bytes", "compression_ratio",
-            "cpu_min_pct", "cpu_max_pct", "cpu_avg_pct",
-            "mem_min_bytes", "mem_max_bytes", "mem_avg_bytes",
-            "mem_min_pct", "mem_max_pct", "mem_avg_pct",
-            "disk_used_before_bytes", "disk_used_after_bytes",
-            "disk_delta_bytes", "disk_used_pct"
+            "cpu_avg_pct", "cpu_min_pct", "cpu_max_pct",
+            "mem_avg_mb", "mem_avg_pct", "mem_min_mb", "mem_max_mb", "mem_min_pct", "mem_max_pct",
+            "disk_before_mb", "disk_after_mb", "disk_delta_mb", "disk_used_pct",
+            "table_name", "total_rows", "batch_size", "total_batches"
     };
 
     private final String filePath;
@@ -64,30 +62,31 @@ public class CsvReportWriter {
              CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
             printer.printRecord(
                     result.dataType,
+                    result.dataProperty,
                     result.preprocessor,
                     result.codec,
+                    fmt(result.compressionRatio),
+                    fmt(result.compressedMb),
+                    fmt(result.uncompressedMb),
+                    fmt(result.totalInsertTimeSec),
+                    fmt(result.avgBatchTimeMs),
+                    fmt(result.cpuAvgPct),
+                    fmt(result.cpuMinPct),
+                    fmt(result.cpuMaxPct),
+                    fmt(result.memAvgMb),
+                    fmt(result.memAvgPct),
+                    fmt(result.memMinMb),
+                    fmt(result.memMaxMb),
+                    fmt(result.memMinPct),
+                    fmt(result.memMaxPct),
+                    fmt(result.diskBeforeMb),
+                    fmt(result.diskAfterMb),
+                    fmt(result.diskDeltaMb),
+                    fmt(result.diskUsedPct),
                     result.tableName,
                     result.totalRows,
                     result.batchSize,
-                    result.totalBatches,
-                    fmtTime(result.totalInsertTimeSec),
-                    fmtTime(result.avgBatchTimeMs),
-                    result.compressedBytes,
-                    result.uncompressedBytes,
-                    fmtRatio(result.compressionRatio),
-                    fmtPct(result.cpuMinPct),
-                    fmtPct(result.cpuMaxPct),
-                    fmtPct(result.cpuAvgPct),
-                    fmtBytes(result.memMinBytes),
-                    fmtBytes(result.memMaxBytes),
-                    fmtBytes(result.memAvgBytes),
-                    fmtPct(result.memMinPct),
-                    fmtPct(result.memMaxPct),
-                    fmtPct(result.memAvgPct),
-                    fmtBytes(result.diskUsedBeforeBytes),
-                    fmtBytes(result.diskUsedAfterBytes),
-                    fmtBytes(result.diskDeltaBytes),
-                    fmtPct(result.diskUsedPct)
+                    result.totalBatches
             );
             printer.flush();
         } catch (IOException e) {
@@ -95,23 +94,13 @@ public class CsvReportWriter {
         }
     }
 
-    private static String fmtBytes(double v) {
-        return String.valueOf(Math.round(v));
-    }
-
-    private static String fmtPct(double v) {
-        if (v < 0) return String.valueOf((long) v);
-        return String.format("%.4f", v);
-    }
-
-    private static String fmtTime(double v) {
-        if (v < 0) return String.valueOf((long) v);
-        return String.format("%.6f", v);
-    }
-
-    private static String fmtRatio(double v) {
-        if (v < 0) return String.valueOf((long) v);
-        return String.format("%.4f", v);
+    /**
+     * Format a double value to 2 decimal places.
+     * Returns "-1" (not "-1.00") for error sentinel values (v < 0).
+     */
+    private static String fmt(double v) {
+        if (v < 0) return "-1";
+        return String.format("%.2f", v);
     }
 
     /**
