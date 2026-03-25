@@ -52,6 +52,7 @@ public class Main {
             try {
                 // a. Drop existing table and create a new one
                 chManager.dropTableIfExists(combo.tableName);
+                Thread.sleep(BenchmarkConfig.MERGE_SETTLE_DELAY_MS); // wait for ClickHouse to free disk
                 String ddl = TableSchemaBuilder.buildCreateTable(
                         combo.tableName, combo.fullTypeDef, combo.preprocessor, combo.codec);
                 chManager.createTable(ddl);
@@ -115,15 +116,15 @@ public class Main {
                 result.cpuMinPct = cpu[0];
                 result.cpuMaxPct = cpu[1];
                 result.cpuAvgPct = cpu[2];
-                result.memMinMb = mem[0] / 1048576.0;
-                result.memMaxMb = mem[1] / 1048576.0;
-                result.memAvgMb = mem[2] / 1048576.0;
+                result.memMinMb = Double.isNaN(mem[0]) ? Double.NaN : mem[0] / 1048576.0;
+                result.memMaxMb = Double.isNaN(mem[1]) ? Double.NaN : mem[1] / 1048576.0;
+                result.memAvgMb = Double.isNaN(mem[2]) ? Double.NaN : mem[2] / 1048576.0;
                 result.memMinPct = mem[3];
                 result.memMaxPct = mem[4];
                 result.memAvgPct = mem[5];
-                result.diskBeforeMb = disk[0] / 1048576.0;
-                result.diskAfterMb = disk[1] / 1048576.0;
-                result.diskDeltaMb = disk[2] / 1048576.0;
+                result.diskBeforeMb = Double.isNaN(disk[0]) ? Double.NaN : disk[0] / 1048576.0;
+                result.diskAfterMb = Double.isNaN(disk[1]) ? Double.NaN : disk[1] / 1048576.0;
+                result.diskDeltaMb = Double.isNaN(disk[2]) ? Double.NaN : disk[2] / 1048576.0;
                 result.diskUsedPct = disk[3];
 
                 // j. Write to CSV
@@ -197,6 +198,8 @@ public class Main {
                 false, false, false, seed("LowCardinality(String)"),
                 List.of("50_distinct", "100_distinct", "500_distinct",
                         "1000_distinct", "5000_distinct", "10000_distinct")));
+        types.add(new DataTypeInfo("FixedString", null, false, false, false, seed("FixedString"),
+                List.of("len_20", "len_50", "len_100")));
 
         return types;
     }
@@ -252,6 +255,16 @@ public class Main {
                         "Cannot parse Enum8 constant count from property '" + property + "'", e);
             }
         }
+        if ("FixedString".equals(dt.typeName)) {
+            // property: "len_20" -> FixedString(20), "len_50" -> FixedString(50), "len_100" -> FixedString(100)
+            try {
+                int len = Integer.parseInt(property.replace("len_", ""));
+                return "FixedString(" + len + ")";
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(
+                        "Cannot parse FixedString length from property '" + property + "'", e);
+            }
+        }
         return dt.fullTypeDef;
     }
 
@@ -296,24 +309,24 @@ public class Main {
         r.totalRows = BenchmarkConfig.TOTAL_ROWS;
         r.batchSize = BenchmarkConfig.BATCH_SIZE;
         r.totalBatches = BenchmarkConfig.TOTAL_BATCHES;
-        r.totalInsertTimeSec = -1;
-        r.avgBatchTimeMs = -1;
-        r.compressedMb = -1;
-        r.uncompressedMb = -1;
-        r.compressionRatio = -1;
-        r.cpuMinPct = -1;
-        r.cpuMaxPct = -1;
-        r.cpuAvgPct = -1;
-        r.memMinMb = -1;
-        r.memMaxMb = -1;
-        r.memAvgMb = -1;
-        r.memMinPct = -1;
-        r.memMaxPct = -1;
-        r.memAvgPct = -1;
-        r.diskBeforeMb = -1;
-        r.diskAfterMb = -1;
-        r.diskDeltaMb = -1;
-        r.diskUsedPct = -1;
+        r.totalInsertTimeSec = Double.NaN;
+        r.avgBatchTimeMs = Double.NaN;
+        r.compressedMb = Double.NaN;
+        r.uncompressedMb = Double.NaN;
+        r.compressionRatio = Double.NaN;
+        r.cpuMinPct = Double.NaN;
+        r.cpuMaxPct = Double.NaN;
+        r.cpuAvgPct = Double.NaN;
+        r.memMinMb = Double.NaN;
+        r.memMaxMb = Double.NaN;
+        r.memAvgMb = Double.NaN;
+        r.memMinPct = Double.NaN;
+        r.memMaxPct = Double.NaN;
+        r.memAvgPct = Double.NaN;
+        r.diskBeforeMb = Double.NaN;
+        r.diskAfterMb = Double.NaN;
+        r.diskDeltaMb = Double.NaN;
+        r.diskUsedPct = Double.NaN;
         return r;
     }
 

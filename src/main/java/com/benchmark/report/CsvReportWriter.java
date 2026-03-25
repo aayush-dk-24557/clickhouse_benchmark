@@ -96,10 +96,10 @@ public class CsvReportWriter {
 
     /**
      * Format a double value to 2 decimal places.
-     * Returns "-1" (not "-1.00") for error sentinel values (v < 0).
+     * Returns "-1" for error sentinel values (Double.NaN); negative values are formatted normally.
      */
     private static String fmt(double v) {
-        if (v < 0) return "-1";
+        if (Double.isNaN(v)) return "-1";
         return String.format("%.2f", v);
     }
 
