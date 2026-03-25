@@ -126,6 +126,8 @@ public class DataGenerator {
                 return generateString(property);
             case "LowCardinality(String)":
                 return generateLowCardinalityString();
+            case "FixedString":
+                return generateFixedString(property);
             default:
                 throw new IllegalArgumentException("Unknown type: " + type);
         }
@@ -344,6 +346,23 @@ public class DataGenerator {
         } catch (NumberFormatException e) {
             return 50; // default fallback
         }
+    }
+
+    // ---- FixedString ----
+
+    private String generateFixedString(String property) {
+        int len;
+        switch (property) {
+            case "len_20":  len = 20;  break;
+            case "len_50":  len = 50;  break;
+            case "len_100": len = 100; break;
+            default:        len = 20;  break;
+        }
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            sb.append(ALPHANUMERIC.charAt(random.nextInt(ALPHANUMERIC.length())));
+        }
+        return "'" + sb.toString() + "'";
     }
 
     private List<String> buildLcPool(int poolSize) {

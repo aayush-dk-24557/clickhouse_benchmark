@@ -35,7 +35,7 @@ public class PrometheusMetrics {
     /**
      * Get CPU usage over time range.
      *
-     * @return [minPct, maxPct, avgPct] or [-1,-1,-1] on failure
+     * @return [minPct, maxPct, avgPct] or [NaN,NaN,NaN] on failure
      */
     public double[] getCpuUsage(long startEpoch, long endEpoch) {
         try {
@@ -43,19 +43,19 @@ public class PrometheusMetrics {
             List<Double> values = queryRangeSeries(query, startEpoch, endEpoch, "500ms");
             if (values.isEmpty()) {
                 LOG.warning("No CPU data from Prometheus");
-                return new double[]{-1, -1, -1};
+                return new double[]{Double.NaN, Double.NaN, Double.NaN};
             }
             return computeStats(values);
         } catch (Exception e) {
             LOG.warning("Failed to get CPU metrics: " + e.getMessage());
-            return new double[]{-1, -1, -1};
+            return new double[]{Double.NaN, Double.NaN, Double.NaN};
         }
     }
 
     /**
      * Get memory usage over time range.
      *
-     * @return [minBytes, maxBytes, avgBytes, minPct, maxPct, avgPct] or [-1,...] on failure
+     * @return [minBytes, maxBytes, avgBytes, minPct, maxPct, avgPct] or [NaN,...] on failure
      */
     public double[] getMemoryUsage(long startEpoch, long endEpoch) {
         try {
@@ -71,7 +71,7 @@ public class PrometheusMetrics {
 
             if (usedValues.isEmpty()) {
                 LOG.warning("No memory used data from Prometheus");
-                return new double[]{-1, -1, -1, -1, -1, -1};
+                return new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN};
             }
 
             // Get total memory for percentage calculation
@@ -92,26 +92,26 @@ public class PrometheusMetrics {
                     result[4] = (usedStats[1] / avgTotal) * 100.0; // maxPct
                     result[5] = (usedStats[2] / avgTotal) * 100.0; // avgPct
                 } else {
-                    result[3] = -1;
-                    result[4] = -1;
-                    result[5] = -1;
+                    result[3] = Double.NaN;
+                    result[4] = Double.NaN;
+                    result[5] = Double.NaN;
                 }
             } else {
-                result[3] = -1;
-                result[4] = -1;
-                result[5] = -1;
+                result[3] = Double.NaN;
+                result[4] = Double.NaN;
+                result[5] = Double.NaN;
             }
             return result;
         } catch (Exception e) {
             LOG.warning("Failed to get memory metrics: " + e.getMessage());
-            return new double[]{-1, -1, -1, -1, -1, -1};
+            return new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN};
         }
     }
 
     /**
      * Get disk usage before and after the time range.
      *
-     * @return [beforeBytes, afterBytes, deltaBytes, usedPct] or [-1,...] on failure
+     * @return [beforeBytes, afterBytes, deltaBytes, usedPct] or [NaN,...] on failure
      */
     public double[] getDiskUsage(long startEpoch, long endEpoch) {
         try {
@@ -122,17 +122,17 @@ public class PrometheusMetrics {
             Double afterUsed = queryInstant(usedQuery, endEpoch);
             Double totalBytes = queryInstant(totalQuery, endEpoch);
 
-            double before = beforeUsed != null ? Math.round(beforeUsed) : -1;
-            double after = afterUsed != null ? Math.round(afterUsed) : -1;
+            double before = beforeUsed != null ? Math.round(beforeUsed) : Double.NaN;
+            double after = afterUsed != null ? Math.round(afterUsed) : Double.NaN;
             double delta = (beforeUsed != null && afterUsed != null)
-                    ? Math.round(afterUsed - beforeUsed) : -1;
-            double pct = (after >= 0 && totalBytes != null && totalBytes > 0)
-                    ? (after / totalBytes) * 100.0 : -1;
+                    ? Math.round(afterUsed - beforeUsed) : Double.NaN;
+            double pct = (!Double.isNaN(after) && totalBytes != null && totalBytes > 0)
+                    ? (after / totalBytes) * 100.0 : Double.NaN;
 
             return new double[]{before, after, delta, pct};
         } catch (Exception e) {
             LOG.warning("Failed to get disk metrics: " + e.getMessage());
-            return new double[]{-1, -1, -1, -1};
+            return new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN};
         }
     }
 
