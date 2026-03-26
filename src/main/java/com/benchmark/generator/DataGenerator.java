@@ -253,6 +253,38 @@ public class DataGenerator {
         return "'" + dt.format(DATETIME64_FMT) + "'";
     }
 
+    // ---- Ordered Date/DateTime batch generation (for every table) ----
+
+    /**
+     * Generate a batch of ordered Date values spanning a 10-year range (2015–2024).
+     * Uses explicit row indices so it is independent of the stateful currentIndex counter.
+     */
+    public List<String> generateOrderedDateBatch(long startRowIndex, int batchSize) {
+        long totalRows = BenchmarkConfig.TOTAL_ROWS;
+        List<String> dates = new ArrayList<>(batchSize);
+        for (int i = 0; i < batchSize; i++) {
+            long rowIndex = startRowIndex + i;
+            long dayOffset = rowIndex * ORDERED_TOTAL_DAYS / totalRows;
+            dates.add("'" + ORDERED_START_DATE.plusDays(dayOffset).format(DATE_FMT) + "'");
+        }
+        return dates;
+    }
+
+    /**
+     * Generate a batch of ordered DateTime values spanning a 10-year range (2015–2024).
+     * Uses explicit row indices so it is independent of the stateful currentIndex counter.
+     */
+    public List<String> generateOrderedDateTimeBatch(long startRowIndex, int batchSize) {
+        long totalRows = BenchmarkConfig.TOTAL_ROWS;
+        List<String> dateTimes = new ArrayList<>(batchSize);
+        for (int i = 0; i < batchSize; i++) {
+            long rowIndex = startRowIndex + i;
+            long secOffset = rowIndex * ORDERED_TOTAL_SECONDS / totalRows;
+            dateTimes.add("'" + ORDERED_START_DT.plusSeconds(secOffset).format(DATETIME_FMT) + "'");
+        }
+        return dateTimes;
+    }
+
     // ---- Decimal types ----
 
     private String generateDecimal32(String property) {
