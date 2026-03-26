@@ -106,10 +106,9 @@ public class Main {
                 // i. Build result — convert bytes to MB
                 BenchmarkResult result = new BenchmarkResult();
                 result.dataType = combo.dataType;
-                result.dataProperty = combo.dataProperty;
+                result.dataProperty = combo.dataProperty + "_orderby_" + combo.orderBy;
                 result.preprocessor = combo.preprocessor;
                 result.codec = combo.codec;
-                result.orderBy = combo.orderBy;
                 result.tableName = combo.tableName;
                 result.totalRows = BenchmarkConfig.TOTAL_ROWS;
                 result.batchSize = BenchmarkConfig.BATCH_SIZE;
@@ -322,10 +321,9 @@ public class Main {
     private static BenchmarkResult createErrorResult(Combination combo) {
         BenchmarkResult r = new BenchmarkResult();
         r.dataType = combo.dataType;
-        r.dataProperty = combo.dataProperty;
+        r.dataProperty = combo.dataProperty + "_orderby_" + combo.orderBy;
         r.preprocessor = combo.preprocessor;
         r.codec = combo.codec;
-        r.orderBy = combo.orderBy;
         r.tableName = combo.tableName;
         r.totalRows = BenchmarkConfig.TOTAL_ROWS;
         r.batchSize = BenchmarkConfig.BATCH_SIZE;
