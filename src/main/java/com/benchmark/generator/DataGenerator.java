@@ -206,6 +206,9 @@ public class DataGenerator {
                 return String.valueOf((long) (random.nextDouble() * 2000001) - 1000000);
             case "-50000000_to_50000000":
                 return String.valueOf((long) (random.nextDouble() * 100000001) - 50000000);
+            case "uid_60xxxxxxxxx":
+                // UID-like values in range 60_000_000_000 to 60_999_999_999
+                return String.valueOf(60_000_000_000L + (long) (random.nextDouble() * 1_000_000_000L));
             default: // full_range
                 return String.valueOf(random.nextLong());
         }

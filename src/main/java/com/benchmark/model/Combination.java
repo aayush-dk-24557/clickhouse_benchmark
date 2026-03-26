@@ -6,15 +6,17 @@ public class Combination {
     public String fullTypeDef;
     public String preprocessor;
     public String codec;
+    public String orderBy;         // e.g., "id" or "value"
     public String tableName;
 
     public Combination(String dataType, String dataProperty, String fullTypeDef,
-                       String preprocessor, String codec, String tableName) {
+                       String preprocessor, String codec, String orderBy, String tableName) {
         this.dataType = dataType;
         this.dataProperty = dataProperty;
         this.fullTypeDef = fullTypeDef;
         this.preprocessor = preprocessor;
         this.codec = codec;
+        this.orderBy = orderBy;
         this.tableName = tableName;
     }
 }
