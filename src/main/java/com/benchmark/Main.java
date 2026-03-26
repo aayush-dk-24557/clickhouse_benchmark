@@ -58,7 +58,8 @@ public class Main {
                 chManager.dropTableIfExists(combo.tableName);
                 Thread.sleep(BenchmarkConfig.MERGE_SETTLE_DELAY_MS); // wait for ClickHouse to free disk
                 String ddl = TableSchemaBuilder.buildCreateTable(
-                        combo.tableName, combo.fullTypeDef, combo.preprocessor, combo.codec);
+                        combo.tableName, combo.fullTypeDef, combo.preprocessor, combo.codec,
+                        combo.orderBy);
                 chManager.createTable(ddl);
 
                 // b. Record start time
@@ -108,6 +109,7 @@ public class Main {
                 result.dataProperty = combo.dataProperty;
                 result.preprocessor = combo.preprocessor;
                 result.codec = combo.codec;
+                result.orderBy = combo.orderBy;
                 result.tableName = combo.tableName;
                 result.totalRows = BenchmarkConfig.TOTAL_ROWS;
                 result.batchSize = BenchmarkConfig.BATCH_SIZE;
@@ -174,7 +176,7 @@ public class Main {
         types.add(new DataTypeInfo("Int32", "Int32", true, true, true, seed("Int32"),
                 List.of("-50000_to_50000", "full_range")));
         types.add(new DataTypeInfo("Int64", "Int64", true, true, true, seed("Int64"),
-                List.of("-1000000_to_1000000", "-50000000_to_50000000", "full_range")));
+                List.of("-1000000_to_1000000", "-50000000_to_50000000", "full_range", "uid_60xxxxxxxxx")));
         types.add(new DataTypeInfo("Float32", "Float32", true, true, false, seed("Float32"),
                 List.of("0.0_to_1.0", "-1000_to_1000", "full_range")));
         types.add(new DataTypeInfo("Float64", "Float64", true, true, false, seed("Float64"),
@@ -222,15 +224,27 @@ public class Main {
         for (DataTypeInfo dt : dataTypes) {
             for (String property : dt.dataProperties) {
                 String fullTypeDef = resolveFullTypeDef(dt, property);
+
+                // Determine which ORDER BY variants to use for this property
+                String[] orderBys;
+                if ("uid_60xxxxxxxxx".equals(property)) {
+                    orderBys = new String[]{"id", "value"};
+                } else {
+                    orderBys = new String[]{"id"};
+                }
+
                 for (String preprocessor : preprocessors) {
                     if ("Delta".equals(preprocessor) && !dt.supportsDelta) continue;
                     if ("DoubleDelta".equals(preprocessor) && !dt.supportsDoubleDelta) continue;
                     if ("T64".equals(preprocessor) && !dt.supportsT64) continue;
 
                     for (String codec : codecs) {
-                        String tableName = buildTableName(dt.typeName, property, preprocessor, codec);
-                        combinations.add(new Combination(dt.typeName, property, fullTypeDef,
-                                preprocessor, codec, tableName));
+                        for (String orderBy : orderBys) {
+                            String tableName = buildTableName(
+                                    dt.typeName, property, preprocessor, codec, orderBy);
+                            combinations.add(new Combination(dt.typeName, property, fullTypeDef,
+                                    preprocessor, codec, orderBy, tableName));
+                        }
                     }
                 }
             }
@@ -273,11 +287,12 @@ public class Main {
     }
 
     /**
-     * Build table name including data_property.
-     * Format: test_{sanitizedType}_{sanitizedProperty}_{sanitizedPreprocessor}_{sanitizedCodec}
+     * Build table name including data_property and order_by.
+     * Format: test_{sanitizedType}_{sanitizedProperty}_{sanitizedPreprocessor}_{sanitizedCodec}_orderby_{orderBy}
      */
     private static String buildTableName(String typeName, String property,
-                                         String preprocessor, String codec) {
+                                         String preprocessor, String codec,
+                                         String orderBy) {
         String sanitizedType = sanitizeIdentifier(typeName);
         String sanitizedProperty = sanitizeIdentifier(property);
         String sanitizedPreprocessor = preprocessor.toLowerCase();
@@ -286,7 +301,8 @@ public class Main {
                 .replace(")", "")
                 .replace(" ", "");
         return "test_" + sanitizedType + "_" + sanitizedProperty
-                + "_" + sanitizedPreprocessor + "_" + sanitizedCodec;
+                + "_" + sanitizedPreprocessor + "_" + sanitizedCodec
+                + "_orderby_" + orderBy;
     }
 
     /**
@@ -309,6 +325,7 @@ public class Main {
         r.dataProperty = combo.dataProperty;
         r.preprocessor = combo.preprocessor;
         r.codec = combo.codec;
+        r.orderBy = combo.orderBy;
         r.tableName = combo.tableName;
         r.totalRows = BenchmarkConfig.TOTAL_ROWS;
         r.batchSize = BenchmarkConfig.BATCH_SIZE;

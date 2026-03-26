@@ -5,6 +5,7 @@ public class BenchmarkResult {
     public String dataProperty;       // value range/characteristic label
     public String preprocessor;
     public String codec;
+    public String orderBy;            // "id" or "value"
     public String tableName;
     public int totalRows;
     public int batchSize;

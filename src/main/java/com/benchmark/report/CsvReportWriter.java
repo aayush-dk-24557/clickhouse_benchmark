@@ -20,7 +20,7 @@ import java.util.Set;
 public class CsvReportWriter {
 
     private static final String[] HEADERS = {
-            "data_type", "data_property", "preprocessor", "codec",
+            "data_type", "data_property", "preprocessor", "codec", "order_by",
             "compression_ratio", "compressed_mb", "uncompressed_mb",
             "total_insert_time_sec", "avg_batch_time_ms",
             "cpu_avg_pct", "cpu_min_pct", "cpu_max_pct",
@@ -65,6 +65,7 @@ public class CsvReportWriter {
                     result.dataProperty,
                     result.preprocessor,
                     result.codec,
+                    result.orderBy,
                     fmt(result.compressionRatio),
                     fmt(result.compressedMb),
                     fmt(result.uncompressedMb),
