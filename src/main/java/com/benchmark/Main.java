@@ -71,14 +71,9 @@ public class Main {
                 // d. Insert batches
                 for (int batch = 0; batch < BenchmarkConfig.TOTAL_BATCHES; batch++) {
                     long startId = (long) batch * BenchmarkConfig.BATCH_SIZE + 1;
-                    long startRowIndex = (long) batch * BenchmarkConfig.BATCH_SIZE;
                     List<String> values = generator.generateBatch(
                             combo.dataType, combo.dataProperty, BenchmarkConfig.BATCH_SIZE);
-                    List<String> dates = generator.generateOrderedDateBatch(
-                            startRowIndex, BenchmarkConfig.BATCH_SIZE);
-                    List<String> dateTimes = generator.generateOrderedDateTimeBatch(
-                            startRowIndex, BenchmarkConfig.BATCH_SIZE);
-                    chManager.insertBatch(combo.tableName, values, startId, dates, dateTimes);
+                    chManager.insertBatch(combo.tableName, values, startId);
 
                     if ((batch + 1) % BenchmarkConfig.LOG_INTERVAL == 0) {
                         System.out.println("  Batch " + (batch + 1) + "/" + BenchmarkConfig.TOTAL_BATCHES);

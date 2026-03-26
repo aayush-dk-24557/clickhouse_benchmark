@@ -10,8 +10,6 @@ public class TableSchemaBuilder {
         String codecClause = buildCodecClause(preprocessor, codec);
         return "CREATE TABLE IF NOT EXISTS " + tableName + " (\n" +
                 "    id UInt64,\n" +
-                "    date_col Date,\n" +
-                "    datetime_col DateTime,\n" +
                 "    value " + clickHouseType + " CODEC(" + codecClause + ")\n" +
                 ") ENGINE = MergeTree()\n" +
                 "ORDER BY id";
