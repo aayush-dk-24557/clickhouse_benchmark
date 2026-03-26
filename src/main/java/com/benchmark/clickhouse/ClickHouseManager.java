@@ -120,18 +120,13 @@ public class ClickHouseManager {
      * Insert a batch of values into the given table.
      * id starts from startId for this batch.
      * values is a list of SQL literals (already quoted if needed).
-     * dates and dateTimes are ordered Date and DateTime values for every row.
      */
-    public void insertBatch(String tableName, List<String> values, long startId,
-                            List<String> dates, List<String> dateTimes) {
+    public void insertBatch(String tableName, List<String> values, long startId) {
         StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO ").append(tableName).append(" (id, date_col, datetime_col, value) VALUES ");
+        sb.append("INSERT INTO ").append(tableName).append(" (id, value) VALUES ");
         for (int i = 0; i < values.size(); i++) {
             if (i > 0) sb.append(',');
-            sb.append('(').append(startId + i).append(',')
-              .append(dates.get(i)).append(',')
-              .append(dateTimes.get(i)).append(',')
-              .append(values.get(i)).append(')');
+            sb.append('(').append(startId + i).append(',').append(values.get(i)).append(')');
         }
         execute(sb.toString());
     }
