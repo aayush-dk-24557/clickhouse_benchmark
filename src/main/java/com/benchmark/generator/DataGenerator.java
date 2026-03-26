@@ -161,12 +161,17 @@ public class DataGenerator {
     }
 
     private String generateUInt64(String property) {
-        if ("ordered_epoch_ms".equals(property)) {
-            currentEpoch += random.nextInt(100) + 1;
-            return String.valueOf(currentEpoch);
+        switch (property) {
+            case "ordered_epoch_ms":
+                currentEpoch += random.nextInt(100) + 1;
+                return String.valueOf(currentEpoch);
+            case "0-1000000":
+                return String.valueOf((long) (random.nextDouble() * 1000001));
+            case "0-50000000":
+                return String.valueOf((long) (random.nextDouble() * 50000001));
+            default: // random
+                return String.valueOf(random.nextLong() & Long.MAX_VALUE);
         }
-        // random
-        return String.valueOf(random.nextLong() & Long.MAX_VALUE);
     }
 
     // ---- Int types ----
@@ -196,11 +201,14 @@ public class DataGenerator {
     }
 
     private String generateInt64(String property) {
-        if ("-1000000_to_1000000".equals(property)) {
-            return String.valueOf((long) (random.nextDouble() * 2000001) - 1000000);
+        switch (property) {
+            case "-1000000_to_1000000":
+                return String.valueOf((long) (random.nextDouble() * 2000001) - 1000000);
+            case "-50000000_to_50000000":
+                return String.valueOf((long) (random.nextDouble() * 100000001) - 50000000);
+            default: // full_range
+                return String.valueOf(random.nextLong());
         }
-        // full_range
-        return String.valueOf(random.nextLong());
     }
 
     // ---- Float types ----
