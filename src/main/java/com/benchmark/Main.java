@@ -217,7 +217,7 @@ public class Main {
 
     private static List<Combination> buildCombinations(List<DataTypeInfo> dataTypes) {
         String[] preprocessors = {"None", "Delta", "DoubleDelta", "T64"};
-        String[] codecs = {"LZ4", "ZSTD(1)"};
+        String[] codecs = {"LZ4", "ZSTD(1)", "ZSTD(3)"};
 
         List<Combination> combinations = new ArrayList<>();
         for (DataTypeInfo dt : dataTypes) {
