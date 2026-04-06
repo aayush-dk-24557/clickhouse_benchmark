@@ -167,7 +167,7 @@ public class Main {
         types.add(new DataTypeInfo("UInt32", "UInt32", true, true, true, seed("UInt32"),
                 List.of("0-5000", "0-50000", "0-4294967295")));
         types.add(new DataTypeInfo("UInt64", "UInt64", true, true, true, seed("UInt64"),
-                List.of("0-1000000", "0-50000000", "random", "ordered_epoch_ms")));
+                List.of("0-1000000", "0-50000000", "random", "ordered_epoch_ms", "ordered_epoch_100ms")));
         types.add(new DataTypeInfo("Int8", "Int8", true, true, true, seed("Int8"),
                 List.of("-10_to_10", "-50_to_50", "-128_to_127")));
         types.add(new DataTypeInfo("Int16", "Int16", true, true, true, seed("Int16"),
@@ -175,7 +175,7 @@ public class Main {
         types.add(new DataTypeInfo("Int32", "Int32", true, true, true, seed("Int32"),
                 List.of("-50000_to_50000", "full_range")));
         types.add(new DataTypeInfo("Int64", "Int64", true, true, true, seed("Int64"),
-                List.of("-1000000_to_1000000", "-50000000_to_50000000", "full_range", "uid_60xxxxxxxxx")));
+                List.of("-1000000_to_1000000", "-50000000_to_50000000", "full_range", "uid_60xxxxxxxxx", "ordered_epoch_100ms")));
         types.add(new DataTypeInfo("Float32", "Float32", true, true, false, seed("Float32"),
                 List.of("0.0_to_1.0", "-1000_to_1000", "full_range")));
         types.add(new DataTypeInfo("Float64", "Float64", true, true, false, seed("Float64"),

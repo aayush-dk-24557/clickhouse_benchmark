@@ -165,6 +165,9 @@ public class DataGenerator {
             case "ordered_epoch_ms":
                 currentEpoch += random.nextInt(100) + 1;
                 return String.valueOf(currentEpoch);
+            case "ordered_epoch_100ms":
+                currentEpoch += 100;
+                return String.valueOf(currentEpoch);
             case "0-1000000":
                 return String.valueOf((long) (random.nextDouble() * 1000001));
             case "0-50000000":
@@ -202,6 +205,9 @@ public class DataGenerator {
 
     private String generateInt64(String property) {
         switch (property) {
+            case "ordered_epoch_100ms":
+                currentEpoch += 100;
+                return String.valueOf(currentEpoch);
             case "-1000000_to_1000000":
                 return String.valueOf((long) (random.nextDouble() * 2000001) - 1000000);
             case "-50000000_to_50000000":
